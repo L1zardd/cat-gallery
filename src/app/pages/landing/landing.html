@@ -1,1 +1,32 @@
-<p>landing works!</p>
+<div class="landing-page">
+  <div class="landing-card">
+    <h1 class="landing-title">Добро пожаловать в Cat Gallery!</h1>
+    <p class="landing-subtitle">Посмотрите на милых котиков и добавьте любимых в избранное</p>
+    
+    <div class="login-form">
+      <div class="mb-3">
+        <label for="username" class="form-label">Введите ваше имя</label>
+        <input 
+          type="text" 
+          id="username" 
+          class="form-control custom-input"
+          [(ngModel)]="username"
+          placeholder="Например, Котолюб"
+          (keyup.enter)="onLogin()"
+        >
+      </div>
+      
+      <button 
+        class="btn custom-btn w-100"
+        (click)="onLogin()"
+        [disabled]="!username.trim()"
+      >
+        Продолжить
+      </button>
+    </div>
+    
+    <div class="landing-footer">
+      <p class="copyright">© 2024 Cat Gallery. Все права защищены.</p>
+    </div>
+  </div>
+</div>

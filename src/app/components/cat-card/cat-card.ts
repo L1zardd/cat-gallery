@@ -1,11 +1,24 @@
-import { Component } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Cat } from '../../interfaces/cat.interface';
 
 @Component({
   selector: 'app-cat-card',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './cat-card.html',
-  styleUrl: './cat-card.scss',
+  styleUrls: ['./cat-card.scss']
 })
-export class CatCard {
+export class CatCardComponent {
+  @Input() cat!: Cat;
+  @Output() toggleFavorite = new EventEmitter<string>();
+  @Output() selectAvatar = new EventEmitter<string>();
 
+  onFavoriteClick(): void {
+    this.toggleFavorite.emit(this.cat.id);
+  }
+
+  onImageClick(): void {
+    this.selectAvatar.emit(this.cat.imageUrl);
+  }
 }

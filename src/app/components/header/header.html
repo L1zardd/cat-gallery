@@ -1,1 +1,27 @@
 <p>header works!</p>
+<header class="header" *ngIf="user.isAuthenticated">
+  <nav class="container">
+    <div class="header-content">
+      <div class="header-left">
+        <a routerLink="/main" routerLinkActive="active" class="nav-link">
+          Главная
+        </a>
+        <a routerLink="/favorites" routerLinkActive="active" class="nav-link">
+          Избранное
+        </a>
+      </div>
+      
+      <div class="header-right">
+        <div class="user-profile" routerLink="/profile">
+          <img 
+            [src]="user.avatarUrl" 
+            alt="Аватар" 
+            class="user-avatar"
+            onerror="this.src='assets/images/avatars/default-avatar.jpg'"
+          >
+          <span class="user-name">{{ user.username }}</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>

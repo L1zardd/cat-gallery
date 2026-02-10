@@ -1,1 +1,17 @@
-<p>favorites works!</p>
+<div class="favorites-page">
+  <h1 class="page-title">Избранное</h1>
+  
+  <div *ngIf="favorites.length > 0" class="cat-grid">
+    <app-cat-card
+      *ngFor="let cat of favorites"
+      [cat]="cat"
+      (toggleFavorite)="onToggleFavorite($event)"
+    ></app-cat-card>
+  </div>
+  
+  <div *ngIf="favorites.length === 0" class="empty-state">
+    <div class="empty-state-icon">⭐</div>
+    <h3>У вас пока нет избранных картинок</h3>
+    <p>Добавьте котиков в избранное на главной странице</p>
+  </div>
+</div>

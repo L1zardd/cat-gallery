@@ -1,1 +1,61 @@
-<p>profile works!</p>
+<div class="profile-page">
+  <h1 class="page-title">Профиль</h1>
+  
+  <div class="profile-card">
+    <div class="avatar-section">
+      <div class="avatar-upload">
+        <img 
+          [src]="tempAvatarUrl || user.avatarUrl" 
+          alt="Аватар"
+          class="avatar-preview"
+          onerror="this.src='assets/images/avatars/default-avatar.jpg'"
+        >
+        
+        <div class="avatar-upload-btn">
+          <label class="btn btn-outline-secondary">
+            Загрузить аватар
+            <input 
+              type="file" 
+              class="d-none"
+              accept="image/*"
+              (change)="onAvatarChange($event)"
+            >
+          </label>
+          <small class="text-muted d-block mt-2">
+            Нажмите на картинку котика, чтобы использовать её как аватар
+          </small>
+        </div>
+      </div>
+    </div>
+    
+    <div class="profile-form">
+      <div class="mb-4">
+        <label for="username" class="form-label">Имя пользователя</label>
+        <input 
+          type="text" 
+          id="username" 
+          class="form-control custom-input"
+          [(ngModel)]="tempUsername"
+          placeholder="Введите ваше имя"
+        >
+      </div>
+      
+      <div class="profile-actions">
+        <button 
+          class="btn custom-btn save-btn"
+          (click)="onSave()"
+          [disabled]="!hasChanges()"
+        >
+          Сохранить
+        </button>
+        
+        <button 
+          class="btn logout-btn"
+          (click)="onLogout()"
+        >
+          Выход
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

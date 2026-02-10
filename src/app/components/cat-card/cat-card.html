@@ -1,1 +1,33 @@
-<p>cat-card works!</p>
+<div class="cat-card">
+  <div class="cat-image-container">
+    <img 
+      [src]="cat.imageUrl" 
+      [alt]="cat.name"
+      class="cat-image"
+      (click)="onImageClick()"
+      onerror="this.src='assets/images/cats/placeholder.jpg'"
+    >
+  </div>
+  
+  <div class="cat-info">
+    <h3 class="cat-name">{{ cat.name }}</h3>
+    
+    <div class="cat-tags">
+      <span *ngFor="let tag of cat.tags" class="tag">
+        {{ tag }}
+      </span>
+    </div>
+    
+    <div class="cat-actions">
+      <button 
+        class="favorite-btn"
+        (click)="onFavoriteClick()"
+        [class.active]="cat.isFavorite"
+        [title]="cat.isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'"
+      >
+        {{ cat.isFavorite ? '★' : '☆' }} 
+        {{ cat.isFavorite ? 'В Избранном' : 'В Избранное' }}
+      </button>
+    </div>
+  </div>
+</div>
