@@ -1,0 +1,14 @@
+﻿# Angular
+/dist
+/node_modules
+/.angular
+/.cache
+
+# IDE
+/.vscode
+/.idea
+*.swp
+
+# System
+.DS_Store
+Thumbs.db
