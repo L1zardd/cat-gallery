@@ -1,15 +1,24 @@
 ﻿export interface Cat {
-  id: string;
+  id?: string;
   name: string;
   tags: string[];
   imageUrl: string;
-  isFavorite: boolean;
+  isFavorite?: boolean;
   description?: string;
+  createdAt?: Date;
 }
 
-export interface User {
-  id: string;
+export interface Favorite {
+  id?: string;
+  userId: string;
+  catId: string;
+  createdAt: Date;
+}
+
+export interface UserProfile {
+  uid: string;
   username: string;
   avatarUrl: string;
-  isAuthenticated: boolean;
+  email?: string;
+  createdAt: Date;
 }

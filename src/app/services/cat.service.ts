@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Cat } from '../interfaces/cat.interface';
 
 @Injectable({
@@ -140,34 +140,63 @@ export class CatService {
   private catsSubject = new BehaviorSubject<Cat[]>(this.cats);
   cats$ = this.catsSubject.asObservable();
 
-  getCats(): Cat[] {
-    return this.cats;
+  constructor() {
+    // Загружаем из localStorage при старте
+    const savedCats = localStorage.getItem('cats');
+    if (savedCats) {
+      this.cats = JSON.parse(savedCats);
+      this.catsSubject.next(this.cats);
+    }
   }
 
-  toggleFavorite(catId: string): void {
+  private saveToStorage(): void {
+    localStorage.setItem('cats', JSON.stringify(this.cats));
+  }
+
+  getCats(): Observable<Cat[]> {
+    return this.cats$;
+  }
+
+  toggleFavorite(catId: string): Observable<boolean> {
     const index = this.cats.findIndex(cat => cat.id === catId);
     if (index !== -1) {
       this.cats[index].isFavorite = !this.cats[index].isFavorite;
       this.catsSubject.next([...this.cats]);
+      this.saveToStorage();
+      return new BehaviorSubject(true);
     }
+    return new BehaviorSubject(false);
   }
 
-  getFavorites(): Cat[] {
-    return this.cats.filter(cat => cat.isFavorite);
+  getFavorites(): Observable<Cat[]> {
+    const favorites = this.cats.filter(cat => cat.isFavorite);
+    return new BehaviorSubject(favorites);
   }
 
-  filterCats(search: string, tag: string | null): Cat[] {
-    return this.cats.filter(cat => {
+  filterCats(search: string, tag: string | null): Observable<Cat[]> {
+    const filtered = this.cats.filter(cat => {
       const matchesSearch = search ? 
         cat.name.toLowerCase().includes(search.toLowerCase()) : true;
       const matchesTag = tag ? 
         cat.tags.includes(tag) : true;
       return matchesSearch && matchesTag;
     });
+    return new BehaviorSubject(filtered);
   }
 
-  getAllTags(): string[] {
+  getAllTags(): Observable<string[]> {
     const allTags = this.cats.flatMap(cat => cat.tags);
-    return [...new Set(allTags)];
+    const uniqueTags = [...new Set(allTags)].sort();
+    return new BehaviorSubject(uniqueTags);
+  }
+
+  getCatById(catId: string): Observable<Cat | null> {
+    const cat = this.cats.find(c => c.id === catId);
+    return new BehaviorSubject(cat || null);
+  }
+
+  isFavorite(catId: string): Observable<boolean> {
+    const cat = this.cats.find(c => c.id === catId);
+    return new BehaviorSubject(cat?.isFavorite || false);
   }
 }

@@ -5,6 +5,7 @@ import { CatService } from '../../services/cat.service';
 import { UserService } from '../../services/user.service';
 import { CatCardComponent } from '../../components/cat-card/cat-card';
 import { Cat } from '../../interfaces/cat.interface';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-main',
@@ -27,12 +28,17 @@ export class MainComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // ✅ ПРАВИЛЬНО: подписываемся на Observable
     this.catService.cats$.subscribe((cats: Cat[]) => {
       this.allCats = cats;
       this.filterCats();
     });
     
-    this.allTags = this.catService.getAllTags();
+    // ✅ ПРАВИЛЬНО: подписываемся на теги
+    this.catService.getAllTags().subscribe(tags => {
+      this.allTags = tags;
+    });
+    
     this.user = this.userService.getCurrentUser();
   }
 
@@ -45,11 +51,18 @@ export class MainComponent implements OnInit {
   }
 
   filterCats(): void {
-    this.filteredCats = this.catService.filterCats(this.searchQuery, this.selectedTag || null);
+    // ✅ ПРАВИЛЬНО: подписываемся на результат фильтрации
+    this.catService.filterCats(this.searchQuery, this.selectedTag || null)
+      .subscribe(cats => {
+        this.filteredCats = cats;
+      });
   }
 
   onToggleFavorite(catId: string): void {
-    this.catService.toggleFavorite(catId);
+    this.catService.toggleFavorite(catId).subscribe(() => {
+      // Обновляем список после изменения избранного
+      this.filterCats();
+    });
   }
 
   onSelectAvatar(imageUrl: string): void {

@@ -2,6 +2,12 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.3.
 
+```bash
+# Windows PowerShell
+ng serve --host 0.0.0.0 --port 4200 --disable-host-check
+```
+
+
 ## Development server
 
 To start a local development server, run:

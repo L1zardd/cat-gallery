@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { CatService } from '../../services/cat.service';
 import { CatCardComponent } from '../../components/cat-card/cat-card';
 import { Cat } from '../../interfaces/cat.interface';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-favorites',
@@ -12,22 +13,23 @@ import { Cat } from '../../interfaces/cat.interface';
   styleUrls: ['./favorites.scss']
 })
 export class FavoritesComponent implements OnInit {
-  favorites: Cat[] = [];
+  favorites$: Observable<Cat[]>; // ✅ Observable вместо массива
 
-  constructor(private catService: CatService) {}
-
-  ngOnInit(): void {
-    this.loadFavorites();
-    this.catService.cats$.subscribe(() => {
-      this.loadFavorites();
-    });
+  constructor(private catService: CatService) {
+    this.favorites$ = this.catService.getFavorites();
   }
 
-  loadFavorites(): void {
-    this.favorites = this.catService.getFavorites();
+  ngOnInit(): void {
+    // Обновляем при изменениях
+    this.catService.cats$.subscribe(() => {
+      this.favorites$ = this.catService.getFavorites();
+    });
+
   }
 
   onToggleFavorite(catId: string): void {
-    this.catService.toggleFavorite(catId);
+    this.catService.toggleFavorite(catId).subscribe(() => {
+      this.favorites$ = this.catService.getFavorites();
+    });
   }
 }
