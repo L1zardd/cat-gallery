@@ -4,13 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { CatService } from '../../services/cat.service';
 import { UserService } from '../../services/user.service';
 import { CatCardComponent } from '../../components/cat-card/cat-card';
+import { AuthModalComponent } from '../../components/auth-modal/auth-modal';
 import { Cat } from '../../interfaces/cat.interface';
-import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [CommonModule, FormsModule, CatCardComponent],
+  imports: [CommonModule, FormsModule, CatCardComponent, AuthModalComponent],
   templateUrl: './main.html',
   styleUrls: ['./main.scss']
 })
@@ -21,6 +21,7 @@ export class MainComponent implements OnInit {
   searchQuery: string = '';
   selectedTag: string = '';
   user: any = null;
+  showAuthModal: boolean = false;
 
   constructor(
     private catService: CatService,
@@ -28,18 +29,15 @@ export class MainComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // ✅ ПРАВИЛЬНО: подписываемся на Observable
     this.catService.cats$.subscribe((cats: Cat[]) => {
       this.allCats = cats;
       this.filterCats();
     });
     
-    // ✅ ПРАВИЛЬНО: подписываемся на теги
-    this.catService.getAllTags().subscribe(tags => {
-      this.allTags = tags;
+    this.allTags = this.catService.getAllTags();
+    this.userService.user$.subscribe(user => {
+      this.user = user;
     });
-    
-    this.user = this.userService.getCurrentUser();
   }
 
   onSearchChange(): void {
@@ -51,23 +49,25 @@ export class MainComponent implements OnInit {
   }
 
   filterCats(): void {
-    // ✅ ПРАВИЛЬНО: подписываемся на результат фильтрации
-    this.catService.filterCats(this.searchQuery, this.selectedTag || null)
-      .subscribe(cats => {
-        this.filteredCats = cats;
-      });
+    this.filteredCats = this.catService.filterCats(
+      this.searchQuery, 
+      this.selectedTag || null
+    );
   }
 
   onToggleFavorite(catId: string): void {
-    this.catService.toggleFavorite(catId).subscribe(() => {
-      // Обновляем список после изменения избранного
-      this.filterCats();
-    });
+    if (this.user?.isAuthenticated) {
+      this.catService.toggleFavorite(catId);
+    } else {
+      this.showAuthModal = true;
+    }
   }
 
   onSelectAvatar(imageUrl: string): void {
-    if (this.user) {
-      this.user.avatarUrl = imageUrl;
+    if (this.user?.isAuthenticated) {
+      localStorage.setItem('tempAvatar', imageUrl);
+    } else {
+      this.showAuthModal = true;
     }
   }
 }

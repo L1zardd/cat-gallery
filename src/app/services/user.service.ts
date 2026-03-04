@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { User } from '../interfaces/user.interface';
 
+// 👇 ВАЖНО: Экспортируем интерфейс User
+export { User };
+
 @Injectable({
   providedIn: 'root'
 })

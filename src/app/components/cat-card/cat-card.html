@@ -7,6 +7,14 @@
       (click)="onImageClick()"
       onerror="this.src='assets/images/cats/placeholder.jpg'"
     >
+    
+    <!-- Бейдж "Требуется авторизация" при наведении на неактивную звезду -->
+    <div class="auth-overlay" *ngIf="!isAuthenticated && showAuthTooltip" (mouseleave)="showAuthTooltip = false">
+      <div class="auth-tooltip">
+        <p>🔐 Требуется регистрация</p>
+        <button class="auth-btn" routerLink="/">Войти</button>
+      </div>
+    </div>
   </div>
   
   <div class="cat-info">
@@ -22,11 +30,14 @@
       <button 
         class="favorite-btn"
         (click)="onFavoriteClick()"
-        [class.active]="cat.isFavorite"
-        [title]="cat.isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'"
+        [class.active]="cat.isFavorite && isAuthenticated"
+        [class.disabled]="!isAuthenticated"
+        [title]="!isAuthenticated ? 'Войдите, чтобы добавлять в избранное' : (cat.isFavorite ? 'Удалить из избранного' : 'Добавить в избранное')"
+        (mouseenter)="!isAuthenticated && (showAuthTooltip = true)"
+        (mouseleave)="showAuthTooltip = false"
       >
-        {{ cat.isFavorite ? '★' : '☆' }} 
-        {{ cat.isFavorite ? 'В Избранном' : 'В Избранное' }}
+        <span class="star-icon">{{ (cat.isFavorite && isAuthenticated) ? '★' : '☆' }}</span>
+        {{ (cat.isFavorite && isAuthenticated) ? 'В Избранном' : 'В Избранное' }}
       </button>
     </div>
   </div>

@@ -1,21 +1,36 @@
-<p>header works!</p>
 <header class="header" *ngIf="user.isAuthenticated">
   <nav class="container">
     <div class="header-content">
       <div class="header-left">
-        <a routerLink="/main" routerLinkActive="active" class="nav-link">
+        <a 
+          routerLink="/main" 
+          routerLinkActive="active" 
+          class="nav-link"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
           Главная
         </a>
-        <a routerLink="/favorites" routerLinkActive="active" class="nav-link">
+        <a 
+          routerLink="/favorites" 
+          routerLinkActive="active" 
+          class="nav-link"
+        >
           Избранное
+          <span class="favorites-badge" *ngIf="favoritesCount > 0">
+            {{ favoritesCount }}
+          </span>
         </a>
       </div>
       
       <div class="header-right">
-        <div class="user-profile" routerLink="/profile">
+        <div 
+          class="user-profile" 
+          [routerLink]="['/profile']"
+          [title]="'Перейти в профиль'"
+        >
           <img 
             [src]="user.avatarUrl" 
-            alt="Аватар" 
+            [alt]="user.username" 
             class="user-avatar"
             onerror="this.src='assets/images/avatars/default-avatar.jpg'"
           >

@@ -1,0 +1,25 @@
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { UserService } from './user.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  private showAuthModalSubject = new BehaviorSubject<boolean>(false);
+  showAuthModal$ = this.showAuthModalSubject.asObservable();
+
+  constructor(private userService: UserService) {}
+
+  requireAuth(action: string): boolean {
+    if (!this.userService.isAuthenticated()) {
+      this.showAuthModalSubject.next(true);
+      return false;
+    }
+    return true;
+  }
+
+  closeModal(): void {
+    this.showAuthModalSubject.next(false);
+  }
+}

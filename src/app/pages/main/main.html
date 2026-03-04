@@ -40,4 +40,9 @@
     <h3>Котики не найдены</h3>
     <p>Попробуйте изменить параметры поиска</p>
   </div>
+
+  <app-auth-modal 
+  [isVisible]="showAuthModal" 
+  (closeModal)="showAuthModal = false"
+></app-auth-modal>
 </div>

@@ -1,0 +1,42 @@
+<div class="modal-overlay" *ngIf="isVisible" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="close()">×</button>
+    
+    <div class="modal-header">
+      <h2>🔐 Требуется авторизация</h2>
+      <p>Чтобы добавлять котиков в избранное, пожалуйста, войдите или зарегистрируйтесь</p>
+    </div>
+    
+    <div class="modal-body">
+      <div class="auth-options">
+        <div class="auth-option">
+          <h3>Уже есть аккаунт?</h3>
+          <button class="btn login-btn" routerLink="/" (click)="close()">
+            Войти
+          </button>
+        </div>
+        
+        <div class="auth-divider">
+          <span>или</span>
+        </div>
+        
+        <div class="auth-option">
+          <h3>Новый пользователь?</h3>
+          <button class="btn register-btn" routerLink="/" (click)="close()">
+            Зарегистрироваться
+          </button>
+          <p class="note">Это займет всего минуту</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <p>После авторизации вы сможете:</p>
+      <ul>
+        <li>✓ Добавлять котиков в избранное</li>
+        <li>✓ Сохранять свой профиль</li>
+        <li>✓ Менять аватарку</li>
+      </ul>
+    </div>
+  </div>
+</div>

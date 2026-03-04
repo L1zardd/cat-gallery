@@ -1,19 +1,36 @@
 <div class="favorites-page">
-  <h1 class="page-title">Избранное</h1>
+  <div class="page-header">
+    <h1 class="page-title">Избранное</h1>
+    <p class="page-subtitle" *ngIf="favorites.length > 0">
+      У вас {{ favorites.length }} {{ getNoun(favorites.length, 'котик', 'котика', 'котиков') }}
+    </p>
+  </div>
   
-  <div *ngIf="favorites$ | async as favorites">
-    <div *ngIf="favorites.length > 0" class="cat-grid">
-      <app-cat-card
-        *ngFor="let cat of favorites"
-        [cat]="cat"
-        (toggleFavorite)="onToggleFavorite($event)"
-      ></app-cat-card>
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Загружаем ваших любимцев...</p>
+  </div>
+  
+  <div *ngIf="!isLoading && favorites.length > 0" class="cat-grid">
+    <app-cat-card
+      *ngFor="let cat of favorites"
+      [cat]="cat"
+      (toggleFavorite)="onToggleFavorite($event)"
+      (selectAvatar)="onSelectAvatar(cat.imageUrl)"
+    ></app-cat-card>
+  </div>
+  
+  <div *ngIf="!isLoading && favorites.length === 0" class="empty-state">
+    <div class="empty-state-icon">
+      <svg width="120" height="120" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" 
+              stroke="#FFD700" stroke-width="2" fill="none"/>
+      </svg>
     </div>
-    
-    <div *ngIf="favorites.length === 0" class="empty-state">
-      <div class="empty-state-icon">⭐</div>
-      <h3>У вас пока нет избранных картинок</h3>
-      <p>Добавьте котиков в избранное на главной странице</p>
-    </div>
+    <h3>У вас пока нет избранных картинок</h3>
+    <p>Добавьте котиков в избранное на главной странице</p>
+    <button class="btn primary-btn" routerLink="/main">
+      Перейти на главную
+    </button>
   </div>
 </div>

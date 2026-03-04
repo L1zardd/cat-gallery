@@ -6,13 +6,11 @@ import { HeaderComponent } from './components/header/header';
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, HeaderComponent],
-  template: `
-    <app-header></app-header>
-    <main class="container mt-4">
+  template:`<app-header></app-header>
+    <main class="main-content">
       <router-outlet></router-outlet>
-    </main>
-  `,
-  styles: []
+    </main>`,
+  styleUrls: ['./app.scss']
 })
 export class AppComponent {
   title = 'cat-gallery';

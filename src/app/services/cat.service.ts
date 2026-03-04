@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Cat } from '../interfaces/cat.interface';
+import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root'
@@ -139,64 +140,104 @@ export class CatService {
 
   private catsSubject = new BehaviorSubject<Cat[]>(this.cats);
   cats$ = this.catsSubject.asObservable();
+  
+  // Хранилище избранного для каждого пользователя
+  private favoritesMap: Map<string, string[]> = new Map();
+  
+  constructor(private userService: UserService) {
+    this.loadFavoritesFromStorage();
+  }
 
-  constructor() {
-    // Загружаем из localStorage при старте
-    const savedCats = localStorage.getItem('cats');
-    if (savedCats) {
-      this.cats = JSON.parse(savedCats);
-      this.catsSubject.next(this.cats);
+  // ---------- ОСНОВНЫЕ МЕТОДЫ ----------
+  
+  getCats(): Cat[] {
+    return this.cats;
+  }
+
+  toggleFavorite(catId: string): void {
+    const userId = this.userService.getCurrentUser().id;
+    
+    // Получаем текущее избранное пользователя
+    let favorites = this.favoritesMap.get(userId) || [];
+    
+    // Обновляем статус в массиве котиков
+    const catIndex = this.cats.findIndex(cat => cat.id === catId);
+    if (catIndex !== -1) {
+      this.cats[catIndex].isFavorite = !this.cats[catIndex].isFavorite;
     }
-  }
-
-  private saveToStorage(): void {
-    localStorage.setItem('cats', JSON.stringify(this.cats));
-  }
-
-  getCats(): Observable<Cat[]> {
-    return this.cats$;
-  }
-
-  toggleFavorite(catId: string): Observable<boolean> {
-    const index = this.cats.findIndex(cat => cat.id === catId);
-    if (index !== -1) {
-      this.cats[index].isFavorite = !this.cats[index].isFavorite;
-      this.catsSubject.next([...this.cats]);
-      this.saveToStorage();
-      return new BehaviorSubject(true);
+    
+    // Обновляем список избранного
+    if (favorites.includes(catId)) {
+      favorites = favorites.filter(id => id !== catId);
+    } else {
+      favorites.push(catId);
     }
-    return new BehaviorSubject(false);
+    
+    this.favoritesMap.set(userId, favorites);
+    this.catsSubject.next([...this.cats]);
+    this.saveFavoritesToStorage();
   }
 
-  getFavorites(): Observable<Cat[]> {
-    const favorites = this.cats.filter(cat => cat.isFavorite);
-    return new BehaviorSubject(favorites);
+  // ---------- РАБОТА С ИЗБРАННЫМ ----------
+  
+  // Получить избранное текущего пользователя
+  getFavorites(): Cat[] {
+  const userId = this.userService.getCurrentUser().id;
+  const favorites = this.favoritesMap.get(userId) || [];
+  // Фильтруем котиков, у которых id есть в favorites
+  return this.cats.filter(cat => cat.id && favorites.includes(cat.id));
+}
+
+  // Проверить, в избранном ли котик
+  isFavorite(catId: string): boolean {
+    const userId = this.userService.getCurrentUser().id;
+    const favorites = this.favoritesMap.get(userId) || [];
+    return favorites.includes(catId);
   }
 
-  filterCats(search: string, tag: string | null): Observable<Cat[]> {
-    const filtered = this.cats.filter(cat => {
+  // Получить количество избранного
+  getFavoritesCount(): number {
+    return this.getFavorites().length;
+  }
+
+  // ---------- ФИЛЬТРАЦИЯ ----------
+  
+  filterCats(search: string, tag: string | null): Cat[] {
+    return this.cats.filter(cat => {
       const matchesSearch = search ? 
         cat.name.toLowerCase().includes(search.toLowerCase()) : true;
       const matchesTag = tag ? 
         cat.tags.includes(tag) : true;
       return matchesSearch && matchesTag;
     });
-    return new BehaviorSubject(filtered);
   }
 
-  getAllTags(): Observable<string[]> {
+  getAllTags(): string[] {
     const allTags = this.cats.flatMap(cat => cat.tags);
-    const uniqueTags = [...new Set(allTags)].sort();
-    return new BehaviorSubject(uniqueTags);
+    return [...new Set(allTags)];
   }
 
-  getCatById(catId: string): Observable<Cat | null> {
-    const cat = this.cats.find(c => c.id === catId);
-    return new BehaviorSubject(cat || null);
+  // ---------- ХРАНЕНИЕ ----------
+  
+  private saveFavoritesToStorage(): void {
+    const favoritesObj: { [key: string]: string[] } = {};
+    this.favoritesMap.forEach((value, key) => {
+      favoritesObj[key] = value;
+    });
+    localStorage.setItem('catShowcaseFavorites', JSON.stringify(favoritesObj));
   }
 
-  isFavorite(catId: string): Observable<boolean> {
-    const cat = this.cats.find(c => c.id === catId);
-    return new BehaviorSubject(cat?.isFavorite || false);
+  private loadFavoritesFromStorage(): void {
+    const saved = localStorage.getItem('catShowcaseFavorites');
+    if (saved) {
+      try {
+        const favoritesObj = JSON.parse(saved);
+        Object.entries(favoritesObj).forEach(([key, value]) => {
+          this.favoritesMap.set(key, value as string[]);
+        });
+      } catch (e) {
+        console.error('Error loading favorites', e);
+      }
+    }
   }
 }

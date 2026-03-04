@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { UserService } from '../../services/user.service';
-import { User } from '../../interfaces/user.interface';
+import { UserService, User } from '../../services/user.service';
+import { CatService } from '../../services/cat.service';
 
 @Component({
   selector: 'app-header',
@@ -18,12 +18,22 @@ export class HeaderComponent implements OnInit {
     avatarUrl: '',
     isAuthenticated: false
   };
+  favoritesCount: number = 0;
 
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private catService: CatService
+  ) {}
 
   ngOnInit(): void {
+    // Подписываемся на изменения пользователя
     this.userService.user$.subscribe(user => {
       this.user = user;
     });
+
+    // Подписываемся на изменения избранного
+    this.catService.cats$.subscribe(() => {
+      this.favoritesCount = this.catService.getFavorites().length;
+    });
   }
-}
+} 

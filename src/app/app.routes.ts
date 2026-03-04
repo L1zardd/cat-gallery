@@ -5,22 +5,32 @@ import { FavoritesComponent } from './pages/favorites/favorites';
 import { ProfileComponent } from './pages/profile/profile';
 import { AuthGuard } from './guards/auth.guard';
 
+
 export const routes: Routes = [
-  { path: '', component: LandingComponent },
+  { 
+    path: '', 
+    component: LandingComponent 
+  },
   { 
     path: 'main', 
     component: MainComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    data: { animation: 'MainPage' }
   },
   { 
     path: 'favorites', 
     component: FavoritesComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    data: { animation: 'FavoritesPage' }
   },
   { 
     path: 'profile', 
     component: ProfileComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    data: { animation: 'ProfilePage' }
   },
-  { path: '**', redirectTo: '' }
+  { 
+    path: '**', 
+    redirectTo: '' 
+  }
 ];
